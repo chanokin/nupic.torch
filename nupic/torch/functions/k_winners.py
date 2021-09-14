@@ -51,7 +51,7 @@ def boost_activations(x, duty_cycles, boost_strength: float):
 
 @torch.jit.script
 def kwinners(x, duty_cycles, k: int, boost_strength: float, break_ties: bool = False,
-             relu: bool = False, inplace: bool = False, neg_loosers:float = 0.0):
+             relu: bool = False, inplace: bool = False, loser_multiplier:float = 0.0):
     """
     A simple K-winner take all function for creating layers with sparse output.
 
@@ -139,15 +139,15 @@ def kwinners(x, duty_cycles, k: int, boost_strength: float, break_ties: bool = F
         off_mask = boosted < threshold
 
     if inplace:
-        return x.masked_fill_(off_mask, x.masked_select(off_mask) * neg_loosers)
+        return x.masked_fill_(off_mask, x.masked_select(off_mask) * loser_multiplier)
     else:
-        return x.masked_fill(off_mask, x.masked_select(off_mask) * neg_loosers)
+        return x.masked_fill(off_mask, x.masked_select(off_mask) * loser_multiplier)
 
 
 @torch.jit.script
 def kwinners2d(x, duty_cycles, k: int, boost_strength: float, local: bool = True,
                break_ties: bool = False, relu: bool = False,
-               inplace: bool = False, neg_loosers:float = 0.0):
+               inplace: bool = False, loser_multiplier:float = 0.0):
     """
     A K-winner take all function for creating Conv2d layers with sparse output.
 
@@ -225,9 +225,9 @@ def kwinners2d(x, duty_cycles, k: int, boost_strength: float, local: bool = True
         off_mask = boosted < threshold
 
     if inplace:
-        return x.masked_fill_(off_mask, x.masked_select(off_mask) * neg_loosers)
+        return x.masked_fill_(off_mask, x.masked_select(off_mask) * loser_multiplier)
     else:
-        return x.masked_fill(off_mask, x.masked_select(off_mask) * neg_loosers)
+        return x.masked_fill(off_mask, x.masked_select(off_mask) * loser_multiplier)
 
 
 __all__ = [

@@ -75,6 +75,7 @@ class KWinnersBase(nn.Module, metaclass=abc.ABCMeta):
         boost_strength=1.0,
         boost_strength_factor=1.0,
         duty_cycle_period=1000,
+        loser_multiplier=0.0,
     ):
         super(KWinnersBase, self).__init__()
         assert boost_strength >= 0.0
@@ -89,6 +90,7 @@ class KWinnersBase(nn.Module, metaclass=abc.ABCMeta):
         self.n = 0
         self.k = 0
         self.k_inference = 0
+        self.loser_multiplier = loser_multiplier
 
         # Boosting related parameters. Put boost_strength in a buffer so that it
         # is saved in the state_dict. Keep a copy that remains a Python float so
@@ -200,6 +202,7 @@ class KWinners(KWinnersBase):
         boost_strength=1.0,
         boost_strength_factor=0.9,
         duty_cycle_period=1000,
+        loser_multiplier=0.0,
         break_ties=False,
         relu=False,
         inplace=False,
@@ -211,6 +214,7 @@ class KWinners(KWinnersBase):
             boost_strength=boost_strength,
             boost_strength_factor=boost_strength_factor,
             duty_cycle_period=duty_cycle_period,
+            loser_multiplier=loser_multiplier,
         )
 
         self.break_ties = break_ties
@@ -226,12 +230,12 @@ class KWinners(KWinnersBase):
 
         if self.training:
             x = F.kwinners(x, self.duty_cycle, self.k, self._cached_boost_strength,
-                           self.break_ties, self.relu, self.inplace)
+                           self.break_ties, self.relu, self.inplace, self.loser_multiplier)
             self.update_duty_cycle(x)
         else:
             x = F.kwinners(x, self.duty_cycle, self.k_inference,
                            self._cached_boost_strength, self.break_ties, self.relu,
-                           self.inplace)
+                           self.inplace, 0.0)
 
         return x
 
@@ -314,6 +318,7 @@ class KWinners2d(KWinnersBase):
         boost_strength=1.0,
         boost_strength_factor=0.9,
         duty_cycle_period=1000,
+        loser_multiplier=0.0,
         local=False,
         break_ties=False,
         relu=False,
@@ -326,6 +331,7 @@ class KWinners2d(KWinnersBase):
             boost_strength=boost_strength,
             boost_strength_factor=boost_strength_factor,
             duty_cycle_period=duty_cycle_period,
+            loser_multiplier=loser_multiplier,
         )
 
         self.channels = channels
@@ -350,12 +356,14 @@ class KWinners2d(KWinnersBase):
         if self.training:
             x = F.kwinners2d(x, self.duty_cycle, self.k,
                              self._cached_boost_strength, self.local,
-                             self.break_ties, self.relu, self.inplace)
+                             self.break_ties, self.relu, self.inplace,
+                             self.loser_multiplier)
             self.update_duty_cycle(x)
         else:
             x = F.kwinners2d(x, self.duty_cycle, self.k_inference,
                              self._cached_boost_strength, self.local,
-                             self.break_ties, self.relu, self.inplace)
+                             self.break_ties, self.relu, self.inplace,
+                             0.0)
 
         return x
 
