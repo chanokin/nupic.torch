@@ -139,9 +139,9 @@ def kwinners(x, duty_cycles, k: int, boost_strength: float, break_ties: bool = F
         off_mask = boosted < threshold
 
     if inplace:
-        return x.masked_fill_(off_mask, x.masked_select(off_mask) * loser_multiplier)
+        return x.masked_scatter_(off_mask, x.masked_select(off_mask) * loser_multiplier)
     else:
-        return x.masked_fill(off_mask, x.masked_select(off_mask) * loser_multiplier)
+        return x.masked_scatter(off_mask, x.masked_select(off_mask) * loser_multiplier)
 
 
 @torch.jit.script
@@ -225,9 +225,9 @@ def kwinners2d(x, duty_cycles, k: int, boost_strength: float, local: bool = True
         off_mask = boosted < threshold
 
     if inplace:
-        return x.masked_fill_(off_mask, x.masked_select(off_mask) * loser_multiplier)
+        return x.masked_scatter_(off_mask, x.masked_select(off_mask) * loser_multiplier)
     else:
-        return x.masked_fill(off_mask, x.masked_select(off_mask) * loser_multiplier)
+        return x.masked_scatter(off_mask, x.masked_select(off_mask) * loser_multiplier)
 
 
 __all__ = [
