@@ -71,6 +71,7 @@ class MNISTSparseCNN(nn.Sequential):
         kwinner_local=False,
         cnn_sparsity=(0.4, 0.55),
         linear_sparsity=0.8,
+        loser_multiplier=0.0,
     ):
         if cnn_weight_sparsity is not None:
             warnings.warn(
@@ -110,6 +111,7 @@ class MNISTSparseCNN(nn.Sequential):
                             boost_strength_factor=boost_strength_factor,
                             duty_cycle_period=duty_cycle_period,
                             local=kwinner_local,
+                            loser_multiplier=loser_multiplier
                         ),
                     ),
                     # Second Sparse CNN layer
@@ -131,6 +133,7 @@ class MNISTSparseCNN(nn.Sequential):
                             boost_strength_factor=boost_strength_factor,
                             duty_cycle_period=duty_cycle_period,
                             local=kwinner_local,
+                            loser_multiplier=loser_multiplier
                         ),
                     ),
                     ("flatten", Flatten()),
@@ -151,6 +154,7 @@ class MNISTSparseCNN(nn.Sequential):
                             boost_strength=boost_strength,
                             boost_strength_factor=boost_strength_factor,
                             duty_cycle_period=duty_cycle_period,
+                            loser_multiplier=loser_multiplier
                         ),
                     ),
                     # Classifier
